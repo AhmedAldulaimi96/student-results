@@ -251,17 +251,18 @@ st.markdown("""
 
 
 # ===================== إعدادات المراحل =====================
+# ملف الأقساط واحد لجميع المراحل
+PAYMENTS_FILE = 'pay.xlsx'
+
 # يمكن إضافة مراحل جديدة هنا بسهولة (مثلاً: '4': {...} للمرحلة الرابعة)
 STAGES = {
     '2': {
         'name': 'المرحلة الثانية',
-        'grades_file': 'm2.xlsx',
-        'payments_file': 'pay2.xlsx'
+        'grades_file': 'm2.xlsx'
     },
     '3': {
         'name': 'المرحلة الثالثة',
-        'grades_file': 'm3.xlsx',
-        'payments_file': 'pay3.xlsx'
+        'grades_file': 'm3.xlsx'
     },
 }
 
@@ -541,21 +542,24 @@ def load_all_stages():
     all_data = {}
     errors = []
 
-    for stage_key, stage_info in STAGES.items():
-        students, err1 = load_grades(stage_info['grades_file'])
-        payments, err2 = load_payments(stage_info['payments_file'])
+    # تحميل ملف الأقساط المشترك مرة واحدة
+    payments, pay_err = load_payments(PAYMENTS_FILE)
+    if pay_err:
+        errors.append(f"❌ ملف الأقساط: {pay_err}")
+        return all_data, errors
 
-        if err1:
-            errors.append(f"⚠️ {stage_info['name']}: {err1}")
-            continue
-        if err2:
-            errors.append(f"⚠️ {stage_info['name']}: {err2}")
+    # تحميل ملف الدرجات لكل مرحلة
+    for stage_key, stage_info in STAGES.items():
+        students, err = load_grades(stage_info['grades_file'])
+
+        if err:
+            errors.append(f"⚠️ {stage_info['name']}: {err}")
             continue
 
         all_data[stage_key] = {
             'name': stage_info['name'],
             'students': students,
-            'payments': payments
+            'payments': payments  # نفس قاموس الأقساط لجميع المراحل
         }
 
     return all_data, errors
