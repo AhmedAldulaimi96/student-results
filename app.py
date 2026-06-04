@@ -663,7 +663,7 @@ def main():
     <div class="header-box">
         <h1>🎓 نظام عرض نتائج الطلاب</h1>
         <p>قسم هندسة الليزر والإلكترونيات البصرية</p>
-        <div class="stage-badge">المرحلتان الثانية والثالثة</div>
+        <div class="stage-badge">للمراحل الاولى، الثانية والثالثة</div>
     </div>
     """, unsafe_allow_html=True)
 
